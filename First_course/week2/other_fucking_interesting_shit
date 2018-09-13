@@ -1,0 +1,158 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <cmath>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+void PrintStrings(const vector<string>& words) {
+	for (const auto& w : words) {
+		cout << w << " ";
+	}
+}
+void PrintMap(const map<int,int>& x) {
+	for (const auto &p : x) {
+	    std::cout << "m[" << p.first << "] = " << p.second << '\n';
+	}
+}
+
+void PrintInts(const vector<int>& ints) {
+	for (const auto& w : ints) {
+		cout << w << " ";
+	}
+}
+
+void NEW_BUS(vector<map<string,vector<string>>>& vector_map_bus_stops){
+	string bus_name;
+	int n_of_stops;
+	string stop_name;
+	map<string,vector<string>> current_bus_map;
+	cin>>bus_name;
+	cin>>n_of_stops;
+
+	for (int i=0;i<n_of_stops;i++){
+		cin>>stop_name;
+		current_bus_map[bus_name].push_back(stop_name);
+	}
+	vector_map_bus_stops.push_back(current_bus_map);
+}
+
+void BUSES_FOR_STOP(const vector<map<string,vector<string>>>& vector_map_bus_stops){
+	string stop_to_search;
+	vector<string> buses_that_stop_there;
+	cin >>stop_to_search;
+	for (const map<string,vector<string>>& map_bus_stops:vector_map_bus_stops ){
+		for (auto& p:map_bus_stops ){
+			if (find(p.second.begin(), p.second.end(), stop_to_search) != p.second.end()){
+				buses_that_stop_there.push_back(p.first);
+				break;
+			}
+		}
+	}
+	if (buses_that_stop_there.empty()){
+		cout<<"No stop";
+	}else{
+		for(const string& good_bus:buses_that_stop_there ){
+			cout<<good_bus<<" ";
+		}
+	}
+	cout<<endl;
+}
+
+void STOPS_FOR_BUS(const vector<map<string,vector<string>>>& vector_map_bus_stops){
+	string bus_to_analyze;
+	cin>>bus_to_analyze;
+	vector<string> bus_stops;
+	for (const map<string,vector<string>>& current_map:vector_map_bus_stops ){
+		if (current_map.count(bus_to_analyze) >0){
+			bus_stops=current_map.at(bus_to_analyze);
+		}
+	}
+	if (bus_stops.empty()){
+		cout<<"No bus"<<endl;
+	}else{
+		for (const string& stop: bus_stops){
+			cout <<"Stop"<<" "<<stop<<":";
+			bool was_interchange=false;
+			for (const map<string,vector<string>>& current_map:vector_map_bus_stops ){
+				for (const auto &p : current_map){
+					if(find(p.second.begin(), p.second.end(), stop) != p.second.end() &&
+							p.first!=bus_to_analyze){
+						cout<<" "<<p.first;
+						was_interchange=true;
+					}
+				}
+
+			}
+//
+			if (!was_interchange){
+				cout<<" "<<"no interchange";
+
+			}
+			cout<<endl;
+		}
+	}
+
+}
+
+void ALL_BUSES(const vector<map<string,vector<string>>>& vector_map_bus_stops){
+	bool was_output=false;
+	map<string,vector<string>> current_vector_map_bus_stops;
+
+	for (const map<string,vector<string>>& current_map:vector_map_bus_stops){
+		for (const auto& p:current_map){
+			for (const string& stops:p.second){
+				current_vector_map_bus_stops[p.first].push_back(stops);
+			}
+		}
+	}
+	for (const auto& p:current_vector_map_bus_stops){
+		cout<<"Bus"<<" "<<p.first<<": ";
+		for (const string& t: p.second){
+			cout<<t<<" ";
+			was_output=true;
+		}
+		cout<<endl;
+
+	}
+	if (!was_output){
+		cout<<"No buses"<<endl;
+	}
+}
+
+//8
+//BUSES_FOR_STOP Marushkino
+//STOPS_FOR_BUS 32K
+//NEW_BUS 32 3 Tolstopaltsevo Marushkino Vnukovo
+//NEW_BUS 32K 6 Tolstopaltsevo Marushkino Vnukovo Peredelkino Solntsevo Skolkovo
+//BUSES_FOR_STOP Vnukovo
+//NEW_BUS 950 6 Kokoshkino Marushkino Vnukovo Peredelkino Solntsevo Troparyovo
+//NEW_BUS 272 4 Vnukovo Moskovsky Rumyantsevo Troparyovo
+//STOPS_FOR_BUS 272
+
+//void ALL_BUSES
+int main(){
+	int Q;
+	vector<map<string,vector<string>>> vector_map_bus_stops;
+	cin>>Q;
+	string optype;
+	int i=0;
+	while ( i<Q){
+		cin >> optype;
+		if (optype=="NEW_BUS"){
+			NEW_BUS( vector_map_bus_stops);
+		}
+		else if (optype=="STOPS_FOR_BUS"){
+			STOPS_FOR_BUS(vector_map_bus_stops);
+		}else if (optype=="BUSES_FOR_STOP"){
+			BUSES_FOR_STOP(vector_map_bus_stops);
+		}else if (optype=="ALL_BUSES"){
+			ALL_BUSES(vector_map_bus_stops);
+		}
+		++i;
+	}
+	return 0;
+}
